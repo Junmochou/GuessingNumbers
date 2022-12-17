@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -22,6 +23,10 @@ public class GameSceneManager : MonoBehaviour
     public Text InformationText;
     [Header("游戏次数提醒文本")]
     public Text RemainTimesText;
+    [Header("额外提示的小面板")]
+    public GameObject TipsPnael;
+    [Header("游戏额外提示的文本")]
+    public Text ExtraTipsText;
 
     /// <summary>
     /// 这里要定义该游戏必要的变量
@@ -123,8 +128,12 @@ public class GameSceneManager : MonoBehaviour
                     TipsText.text = "该数范围在" + RemainData.Min.ToString() + "-" + RemainData.Max.ToString() + "之间";
                     EventManager.CallWrongAnswer();
                     ResultText.text = "你猜错了";
+                    ClickTimes = 0;
+                    Num = 0;
+                    InputText.text = Num.ToString();
                 }
             }
+           
             RemainTimesText.text = "剩余次数：" + RemainData.Times.ToString() + "次";
         }
     }
@@ -166,19 +175,55 @@ public class GameSceneManager : MonoBehaviour
         EventManager.GameOver -= OnGameOver;
     }
 
-    //游戏结束事件
+    //游戏结束事件,并且保存游戏数据
     private void OnGameOver()
     {
         GameOverPanel.SetActive(true);
         if (isSuccessful)
         {
             InformationText.text = "猜数结果：成功\n\n猜数次数：" + (SpareTimes - RemainData.Times).ToString() + "次\n\n最终答案："+RandNumber.ToString();
+            if (RemainData.difficulty == ConstantData.Difficulty.Simple && RemainData.model == ConstantData.Model.Limit)
+            {
+                PlayerPrefs.SetInt(ConstantData.DataName[0], PlayerPrefs.GetInt(ConstantData.DataName[0],0)+1);
+                PlayerPrefs.SetFloat(ConstantData.DataName[0]+"1", PlayerPrefs.GetFloat(ConstantData.DataName[0]+"1", 0) + (float)SpareTimes-RemainData.Times);
+                PlayerPrefs.Save();
+            }
+            else if (RemainData.difficulty == ConstantData.Difficulty.Normal &&RemainData.model == ConstantData.Model.Limit)
+            {
+                PlayerPrefs.SetInt(ConstantData.DataName[1], PlayerPrefs.GetInt(ConstantData.DataName[1], 0) + 1);
+                PlayerPrefs.SetFloat(ConstantData.DataName[1] + "1", PlayerPrefs.GetFloat(ConstantData.DataName[1] + "1", 0) + (float)SpareTimes - RemainData.Times);
+                PlayerPrefs.Save();
+            }
+            else if (RemainData.difficulty == ConstantData.Difficulty.Difficult &&RemainData.model == ConstantData.Model.Limit)
+            {
+                PlayerPrefs.SetInt(ConstantData.DataName[2], PlayerPrefs.GetInt(ConstantData.DataName[2], 0) + 1);
+                PlayerPrefs.SetFloat(ConstantData.DataName[2] + "1", PlayerPrefs.GetFloat(ConstantData.DataName[2] + "1", 0) + (float)SpareTimes - RemainData.Times);
+                PlayerPrefs.Save();
+            }
+            else if (RemainData.difficulty == ConstantData.Difficulty.Simple && RemainData.model == ConstantData.Model.Limitless)
+            {
+                PlayerPrefs.SetInt(ConstantData.DataName[3], PlayerPrefs.GetInt(ConstantData.DataName[3], 0) + 1);
+                PlayerPrefs.SetFloat(ConstantData.DataName[3] + "1", PlayerPrefs.GetFloat(ConstantData.DataName[3] + "1", 0) + (float)SpareTimes - RemainData.Times);
+                PlayerPrefs.Save();
+            }
+            else if (RemainData.difficulty == ConstantData.Difficulty.Normal && RemainData.model == ConstantData.Model.Limitless)
+            {
+                PlayerPrefs.SetInt(ConstantData.DataName[4], PlayerPrefs.GetInt(ConstantData.DataName[4], 0) + 1);
+                PlayerPrefs.SetFloat(ConstantData.DataName[4] + "1", PlayerPrefs.GetFloat(ConstantData.DataName[4] + "1", 0) + (float)SpareTimes - RemainData.Times);
+                PlayerPrefs.Save();
+            }
+            else if (RemainData.difficulty == ConstantData.Difficulty.Difficult && RemainData.model == ConstantData.Model.Limitless)
+            {
+                PlayerPrefs.SetInt(ConstantData.DataName[5], PlayerPrefs.GetInt(ConstantData.DataName[5], 0) + 1);
+                PlayerPrefs.SetFloat(ConstantData.DataName[5] + "1", PlayerPrefs.GetFloat(ConstantData.DataName[5] + "1", 0) + (float)SpareTimes - RemainData.Times);
+                PlayerPrefs.Save();
+            }
 
         }
         else
         {
             InformationText.text = "猜数结果：失败\n\n猜数次数：" + (SpareTimes - RemainData.Times).ToString() + "次\n\n最终答案："+RandNumber.ToString();
-        }
+        } 
     }
 
     //初始化游戏的随机值数据
@@ -245,5 +290,78 @@ public class GameSceneManager : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene("GameScene");
+    }
+
+    //额外的提示
+    public void ExtraTips()
+    {
+        if (RemainData.Times-2<=0)
+        {
+            EventManager.CallWrongAnswer();
+            ResultText.text = "猜数次数不足！";
+        }
+        else
+        {
+            RemainData.Times -= 2;
+            RemainTimesText.text = "剩余次数：" + RemainData.Times.ToString() + "次";
+            string[] result = { "质数", "合数","奇数","偶数" };
+            int index = UnityEngine.Random.Range(0, 4);
+            if (index == 0)
+            {
+                int sum = 0;
+                for (int i = 1; i <= RandNumber; i++)
+                {
+                    if (RandNumber% i == 0)
+                    {
+                        sum += 1;
+                    }
+                }
+                if (sum == 2)
+                {
+                    ExtraTipsText.text="它是一个质数";
+                }
+                else
+                {
+                    ExtraTipsText.text = "它不是一个质数";
+                }
+            }
+            else if (index==1)
+            {
+                int sum = 0;
+                for (int i = 1; i <= RandNumber; i++)
+                {
+                    if (RandNumber % i == 0)
+                    {
+                        sum += 1;
+                    }
+                }
+                if (sum > 2)
+                {
+                    ExtraTipsText.text = "它是一个合数";
+                }
+                else
+                {
+                    ExtraTipsText.text = "它不是一个合数";
+                }
+            }
+            else if (index == 2||index==3)
+            {
+                if (RandNumber%2==0)
+                {
+                    ExtraTipsText.text = "它是一个偶数";
+                }
+                else
+                {
+                    ExtraTipsText.text = "它是一个奇数";
+                }
+            }
+            TipsPnael.SetActive(true);
+        }
+        
+    }
+
+    public void CloseTipsPanel()
+    {
+        TipsPnael.SetActive(false);
     }
 }

@@ -23,4 +23,12 @@ public class ConstantData : MonoBehaviour
         Limitless
     }
 
+    public static string[] DataName = { 
+        "Limit-Simple",
+        "Limit-Normal",
+        "Limit-Difficult",
+        "Limitless-Simple",
+        "Limitless-Normal",
+        "Limitless-Difficult"
+    };
 }

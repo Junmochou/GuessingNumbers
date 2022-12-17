@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class MainSceneManager : MonoBehaviour
 {
@@ -34,6 +33,8 @@ public class MainSceneManager : MonoBehaviour
     {
         VersionText.text = "当前版本：" + Application.version;
     }
+
+   
     //打开游戏模式提示文本
     public void OpenTipsText()
     {
@@ -139,5 +140,13 @@ public class MainSceneManager : MonoBehaviour
     {
         RemainData.difficulty = difficulty;
         RemainData.model = model;
+    }
+
+    /// <summary>
+    /// 切换到统计界面
+    /// </summary>
+    public void SwitchToConclusionScene()
+    {
+        SceneManager.LoadScene("ConclusionScene");
     }
 }

@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Newtonsoft.Json;
-using UnityEngine.UI;
-using JetBrains.Annotations;
-using System;
 
 /// <summary>
 /// 该类用于管理统计场景

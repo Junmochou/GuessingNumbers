@@ -27,6 +27,18 @@ public class MainSceneManager : MonoBehaviour
     //游戏版本号文本框
     public Text VersionText;
 
+    //游戏隐私政策面板
+    public GameObject PrivacyPolicePanel;
+
+
+    void Awake()
+    {
+        UnityEngine.Analytics.Analytics.enabled = false;
+        UnityEngine.Analytics.Analytics.deviceStatsEnabled = false;
+        UnityEngine.Analytics.Analytics.initializeOnStartup = false;
+        UnityEngine.Analytics.Analytics.limitUserTracking = false;
+        UnityEngine.Analytics.PerformanceReporting.enabled = false;
+    }
 
 
     private void Start()
@@ -148,5 +160,16 @@ public class MainSceneManager : MonoBehaviour
     public void SwitchToConclusionScene()
     {
         SceneManager.LoadScene("ConclusionScene");
+    }
+
+    //打开隐私政策面板
+    public void OpenPrivacyPlolicePanel()
+    {
+        PrivacyPolicePanel.SetActive(true);
+    }
+
+    public void ClosePrivacyPolicePanel()
+    {
+        PrivacyPolicePanel.SetActive(false);
     }
 }
